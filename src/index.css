@@ -13,7 +13,7 @@
 
 @font-face {
   font-family: "Roboto";
-  src: url("../public/fonts/Roboto/Roboto-VariableFont_wdth\,wght.ttf");
+  src: url("../fonts/Roboto/Roboto-VariableFont_wdth\,wght.ttf");
 }
 
 @custom-variant dark (&:is(.dark *));
