@@ -2,8 +2,11 @@ import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { motion } from 'motion/react';
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+    const navigate = useNavigate();
+
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             <div className="container mx-auto px-4">
@@ -26,7 +29,7 @@ const HeroSection = () => {
                         Simply capture a photo of your medication and get instant, clear audio explanations about usage, dosage, and important safety information.
                     </motion.p>
                     <div className="flex items-center justify-center">
-                        <Button className="w-60 h-12 text-lg bg-slate-50 text-slate-950 hover:bg-slate-200 font-noto font-medium cursor-pointer">Try it now</Button>
+                        <Button onClick={() => navigate('/analysis')} className="w-60 h-12 text-lg bg-slate-50 text-slate-950 hover:bg-slate-200 font-noto font-medium cursor-pointer">Try it now</Button>
                     </div>
                     <div className="flex items-center justify-center gap-2 mt-5">
                         <div className="flex items-center gap-2">
