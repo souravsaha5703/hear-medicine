@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
+import imageCompression from 'browser-image-compression';
+import axios from 'axios';
 
 const Analysis = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -76,8 +78,44 @@ const Analysis = () => {
 
     const handleAnalyze = async () => {
         if (!selectedImage) return;
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            fileType: 'image/png',
+        }
 
         setIsAnalyzing(true);
+
+        try {
+            const compressedFile = await imageCompression(selectedImage, options);
+            const formData = new FormData();
+            formData.append("file", compressedFile);
+            formData.append("language", "auto");
+            formData.append("isOverlayRequired", "false");
+            formData.append("filetype", "png");
+            formData.append("OCREngine", "2");
+
+            try {
+                const ocrResponse = await axios.post(
+                    "https://api.ocr.space/parse/image",
+                    formData,
+                    {
+                        headers: {
+                            apikey: import.meta.env.VITE_OCR_API_KEY,
+                            "Content-Type": "multipart/form-data",
+                        }
+                    }
+                )
+
+                console.log(ocrResponse.data)
+            } catch (error) {
+                console.error(error);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
 
         // Simulate API call
         setTimeout(() => {
