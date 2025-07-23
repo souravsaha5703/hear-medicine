@@ -23,6 +23,7 @@ import axios from 'axios';
 const Analysis = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [medicineName, setMedicineName] = useState<string>('');
     const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
     const [analysisResult, setAnalysisResult] = useState<boolean>(false);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -76,6 +77,18 @@ const Analysis = () => {
         }
     };
 
+    const cleanOCRText = (ocrText: string) => {
+        const regex = /([A-Za-z0-9\-]+(?:\s[A-Za-z0-9\-]+)*)\s*\(?(\d+)\s*(mg|ml|iu)\)?/gi;
+        const matches = [];
+        let match;
+
+        while ((match = regex.exec(ocrText)) !== null) {
+            matches.push(`${match[1].trim()} ${match[2]}${match[3]}`);
+        }
+
+        return matches.length ? matches.join() : null;
+    }
+
     const handleAnalyze = async () => {
         if (!selectedImage) return;
         const options = {
@@ -108,7 +121,13 @@ const Analysis = () => {
                     }
                 )
 
-                console.log(ocrResponse.data)
+                // console.log(ocrResponse.data.ParsedResults[0].ParsedText);
+                const ocrText: string = ocrResponse.data.ParsedResults[0].ParsedText;
+                const cleanText: string | null = cleanOCRText(ocrText);
+                // console.log(cleanText);
+                if (cleanText != null) {
+                    setMedicineName(cleanText);
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -116,6 +135,9 @@ const Analysis = () => {
             console.error(error);
         }
 
+        setTimeout(() => {
+            console.log("Medicine name is : ", medicineName);
+        }, 2000);
 
         // Simulate API call
         setTimeout(() => {
