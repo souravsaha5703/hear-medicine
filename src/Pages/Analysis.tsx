@@ -19,18 +19,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import axios from 'axios';
+import { medicineInfo } from '@/hooks/getInfo';
+import ReactMarkdown from "react-markdown";
 
 const Analysis = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [medicineName, setMedicineName] = useState<string>('');
+    const [medicineData, setMedicineData] = useState<string>('');
     const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
     const [analysisResult, setAnalysisResult] = useState<boolean>(false);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [isDragOver, setIsDragOver] = useState<boolean>(false);
+    const [textContentLoading, setTextContentLoading] = useState<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
     const navigate = useNavigate();
+    const { getMedicineInfo } = medicineInfo;
 
     const handleFileSelect = (file: File) => {
         setSelectedImage(file);
@@ -99,6 +104,7 @@ const Analysis = () => {
         }
 
         setIsAnalyzing(true);
+        setTextContentLoading(true);
 
         try {
             const compressedFile = await imageCompression(selectedImage, options);
@@ -121,29 +127,30 @@ const Analysis = () => {
                     }
                 )
 
-                // console.log(ocrResponse.data.ParsedResults[0].ParsedText);
+                // console.log(ocrResponse.data);
                 const ocrText: string = ocrResponse.data.ParsedResults[0].ParsedText;
                 const cleanText: string | null = cleanOCRText(ocrText);
                 // console.log(cleanText);
                 if (cleanText != null) {
                     setMedicineName(cleanText);
+                    try {
+                        const medicineInfo = await getMedicineInfo(cleanText);
+                        setMedicineData(medicineInfo);
+                        setTextContentLoading(false);
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             } catch (error) {
                 console.error(error);
             }
         } catch (error) {
             console.error(error);
-        }
-
-        setTimeout(() => {
-            console.log("Medicine name is : ", medicineName);
-        }, 2000);
-
-        // Simulate API call
-        setTimeout(() => {
+        } finally {
             setAnalysisResult(true);
             setIsAnalyzing(false);
-        }, 3000);
+        }
+
     };
 
     const toggleAudio = () => {
@@ -336,14 +343,11 @@ const Analysis = () => {
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        {/* <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                            <h3 className="text-xl font-bold text-green-900 mb-2">
-                                                {analysisResult.medicationName}
+                                        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                            <h3 className="text-xl font-noto font-bold text-green-900 mb-2">
+                                                {medicineName}
                                             </h3>
-                                            <p className="text-green-800">
-                                                Active Ingredient: {analysisResult.activeIngredient} • {analysisResult.dosage}
-                                            </p>
-                                        </div> */}
+                                        </div>
 
                                         <Tabs defaultValue="text" className="w-full">
                                             <TabsList className="grid w-full grid-cols-2">
@@ -362,39 +366,9 @@ const Analysis = () => {
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
                                                     transition={{ delay: 0.3 }}
+                                                    className='text-slate-950 font-noto mt-10 font-medium text-left leading-loose w-full items-center justify-center'
                                                 >
-                                                    {/* <div className="space-y-4">
-                                                        <div>
-                                                            <h4 className="font-semibold text-gray-900 mb-2">Description</h4>
-                                                            <p className="text-gray-700 leading-relaxed">{analysisResult.description}</p>
-                                                        </div>
-
-                                                        <div>
-                                                            <h4 className="font-semibold text-gray-900 mb-2">Usage Instructions</h4>
-                                                            <p className="text-gray-700 leading-relaxed">{analysisResult.usage}</p>
-                                                        </div>
-
-                                                        <div>
-                                                            <h4 className="font-semibold text-gray-900 mb-2">Common Side Effects</h4>
-                                                            <ul className="list-disc list-inside space-y-1 text-gray-700">
-                                                                {analysisResult.sideEffects.map((effect, index) => (
-                                                                    <li key={index}>{effect}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-
-                                                        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                                                            <h4 className="font-semibold text-amber-900 mb-2 flex items-center">
-                                                                <AlertCircle className="w-5 h-5 mr-2" />
-                                                                Important Warnings
-                                                            </h4>
-                                                            <ul className="list-disc list-inside space-y-1 text-amber-800">
-                                                                {analysisResult.warnings.map((warning, index) => (
-                                                                    <li key={index}>{warning}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                    </div> */}
+                                                    {textContentLoading ? <Loader2 className="w-8 h-8 text-amber-600 animate-spin" /> : <ReactMarkdown>{medicineData}</ReactMarkdown>}
                                                 </motion.div>
                                             </TabsContent>
 
