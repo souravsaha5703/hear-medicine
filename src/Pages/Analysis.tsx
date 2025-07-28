@@ -35,7 +35,7 @@ const Analysis = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
     const navigate = useNavigate();
-    const { getMedicineInfo } = medicineInfo;
+    const { getMedicineInfo, getMedicineInfoVoice } = medicineInfo;
 
     const handleFileSelect = (file: File) => {
         setSelectedImage(file);
@@ -135,7 +135,9 @@ const Analysis = () => {
                     setMedicineName(cleanText);
                     try {
                         const medicineInfo = await getMedicineInfo(cleanText);
+                        const medicineInfoVoice  = await getMedicineInfoVoice(medicineInfo);
                         setMedicineData(medicineInfo);
+                        console.log(medicineInfoVoice);
                         setTextContentLoading(false);
                     } catch (error) {
                         console.error(error);
