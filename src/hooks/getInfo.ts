@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const getMedicineInfo = async (medicineName: string) => {
+const getMedicineInfo = async (medicineName: string,language: string) => {
     const response = await fetch(`${import.meta.env.VITE_A4F_BASE_URL}/chat/completions`, {
         method: "POST",
         headers: {
@@ -16,7 +16,7 @@ const getMedicineInfo = async (medicineName: string) => {
                 },
                 {
                     role: "user",
-                    content: `Give me detailed information about "${medicineName}" in the followin format: 1. Uses, 2. Dosage (Adults and Children), 3. Common Side Effects, 4. Warnings (Pregnancy, Elderly, Liver/Kidney patients)`
+                    content: `Give me detailed information about "${medicineName}" in ${language} language and in the followin format: 1. Uses, 2. Dosage (Adults and Children), 3. Common Side Effects, 4. Warnings (Pregnancy, Elderly, Liver/Kidney patients)`
                 },
             ],
         }),
@@ -25,10 +25,11 @@ const getMedicineInfo = async (medicineName: string) => {
     return data.choices[0].message.content;
 }
 
-const getMedicineInfoVoice = async (medicineData: string) => {
+const getMedicineInfoVoice = async (medicineData: string,audioVoiceId:string,audioStyle: string) => {
     const data = {
         text: medicineData,
-        voiceId: "en-US-terrell",
+        voiceId: audioVoiceId,
+        style: audioStyle
     }
     const response = await axios.post("https://api.murf.ai/v1/speech/generate", data, {
         headers: {

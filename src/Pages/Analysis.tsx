@@ -12,7 +12,15 @@ import {
     Loader2,
     ArrowLeft,
     Brain,
+    Languages,
 } from 'lucide-react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,12 +29,15 @@ import imageCompression from 'browser-image-compression';
 import axios from 'axios';
 import { medicineInfo } from '@/hooks/getInfo';
 import ReactMarkdown from "react-markdown";
+import { cleanMarkdownData } from '@/utils/cleanMarkdown';
+import { cleanOCRTextData } from '@/utils/cleanOCRText';
 
 const Analysis = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [medicineName, setMedicineName] = useState<string>('');
     const [medicineData, setMedicineData] = useState<string>('');
+    const [audioLanguage, setAudioLanguage] = useState<string>('');
     const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
     const [analysisResult, setAnalysisResult] = useState<boolean>(false);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -82,18 +93,6 @@ const Analysis = () => {
         }
     };
 
-    const cleanOCRText = (ocrText: string) => {
-        const regex = /([A-Za-z0-9\-]+(?:\s[A-Za-z0-9\-]+)*)\s*\(?(\d+)\s*(mg|ml|iu)\)?/gi;
-        const matches = [];
-        let match;
-
-        while ((match = regex.exec(ocrText)) !== null) {
-            matches.push(`${match[1].trim()} ${match[2]}${match[3]}`);
-        }
-
-        return matches.length ? matches.join() : null;
-    }
-
     const handleAnalyze = async () => {
         if (!selectedImage) return;
         const options = {
@@ -129,13 +128,15 @@ const Analysis = () => {
 
                 // console.log(ocrResponse.data);
                 const ocrText: string = ocrResponse.data.ParsedResults[0].ParsedText;
-                const cleanText: string | null = cleanOCRText(ocrText);
+                const cleanText: string | null = cleanOCRTextData(ocrText);
                 // console.log(cleanText);
                 if (cleanText != null) {
                     setMedicineName(cleanText);
                     try {
-                        const medicineInfo = await getMedicineInfo(cleanText);
-                        const medicineInfoVoice  = await getMedicineInfoVoice(medicineInfo);
+                        const languageInfo = audioLanguage.split(" ");
+                        const medicineInfo = await getMedicineInfo(cleanText,languageInfo[2]);
+                        const cleanMedicineInfo = cleanMarkdownData(medicineInfo);
+                        const medicineInfoVoice = await getMedicineInfoVoice(cleanMedicineInfo,languageInfo[0],languageInfo[1]);
                         setMedicineData(medicineInfo);
                         console.log(medicineInfoVoice);
                         setTextContentLoading(false);
@@ -267,31 +268,57 @@ const Analysis = () => {
                                             Change
                                         </Button>
                                     </div>
-                                    <div className="text-center">
-                                        <p className="text-sm font-noto text-slate-600 mb-4">
-                                            Image ready for analysis • {selectedImage?.name}
-                                        </p>
-                                        <Button
-                                            onClick={handleAnalyze}
-                                            disabled={isAnalyzing}
-                                            className="bg-slate-950 hover:bg-slate-900 cursor-pointer font-noto font-normal"
-                                            size="lg"
-                                        >
-                                            {isAnalyzing ? (
-                                                <>
-                                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                                    Analyzing...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Brain className="w-5 h-5 mr-2" />
-                                                    Start AI Analysis
-                                                </>
-                                            )}
-                                        </Button>
-                                    </div>
                                 </motion.div>
                             )}
+                            <div className='w-full flex flex-col items-start justify-start mt-5 space-y-4'>
+                                <div className='flex items-center'>
+                                    <Languages className="w-6 h-6 mr-2 text-amber-600" />
+                                    <span className='font-noto font-semibold text-slate-950 flex'>Select Your Preffered Language</span>
+                                </div>
+                                <Select value={audioLanguage} onValueChange={(value) => setAudioLanguage(value)}>
+                                    <SelectTrigger className="w-[280px] font-noto">
+                                        <SelectValue placeholder="Choose language" />
+                                    </SelectTrigger>
+                                    <SelectContent className='font-noto text-slate-900 font-normal'>
+                                        <SelectItem value="en-US-natalie Narration English">English - US & Canada</SelectItem>
+                                        <SelectItem value="en-UK-theo Narration English">English - UK</SelectItem>
+                                        <SelectItem value="fr-FR-adélie Conversational French">French - France</SelectItem>
+                                        <SelectItem value="de-DE-lia Conversational German">German - Germany</SelectItem>
+                                        <SelectItem value='es-ES-elvira Conversational Spanish'>Spanish - Spain</SelectItem>
+                                        <SelectItem value='it-IT-greta Conversational Italian'>Italian - Italy</SelectItem>
+                                        <SelectItem value='zh-CN-jiao Conversational Chinese'>Chinese - China</SelectItem>
+                                        <SelectItem value='nl-NL-dirk Conversational Dutch'>Dutch - Netherlands</SelectItem>
+                                        <SelectItem value='ja-JP-denki Conversational Japanese'>Japanese - Japan</SelectItem>
+                                        <SelectItem value='hi-IN-ayushi Conversational Hindi'>Hindi - India</SelectItem>
+                                        <SelectItem value='ta-IN-iniya Conversational Tamil'>Tamil - India</SelectItem>
+                                        <SelectItem value='bn-IN-anwesha General Bengali'>Bengali - India</SelectItem>
+                                        <SelectItem value='ko-KR-gyeong Conversational Korean'>Korean - Korea</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            {imagePreview && <div className="text-center">
+                                <p className="text-sm font-noto text-slate-600 mb-4">
+                                    Image ready for analysis • {selectedImage?.name}
+                                </p>
+                                <Button
+                                    onClick={handleAnalyze}
+                                    disabled={isAnalyzing}
+                                    className="bg-slate-950 hover:bg-slate-900 cursor-pointer font-noto font-normal"
+                                    size="lg"
+                                >
+                                    {isAnalyzing ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                            Analyzing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Brain className="w-5 h-5 mr-2" />
+                                            Start AI Analysis
+                                        </>
+                                    )}
+                                </Button>
+                            </div>}
                         </CardContent>
                     </Card>
 
