@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Github } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
 
@@ -14,9 +15,9 @@ const Navbar: React.FC = () => {
                     <div className='w-full flex items-center justify-between'>
                         <div className='flex gap-2 items-center justify-center'>
                             <img src={logo} className='w-8' alt="HearMedi Logo" />
-                            <h1 className='font-oswald font-bold text-slate-950 text-2xl cursor-pointer'>HearMedi</h1>
+                            <Link to={'/'} target='' className='font-oswald font-bold text-slate-950 text-2xl cursor-pointer'>HearMedi</Link>
                         </div>
-                        <Github className='text-slate-950 cursor-pointer' />
+                        <a target='_blank' href={"https://github.com/souravsaha5703/hear-medicine"}><Github className='text-slate-950 cursor-pointer' /></a>
                     </div>
                 </motion.nav>
             </header >
