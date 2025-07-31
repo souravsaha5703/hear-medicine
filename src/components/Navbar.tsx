@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Github } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 const Navbar: React.FC = () => {
 
@@ -11,7 +12,10 @@ const Navbar: React.FC = () => {
                     transition={{ duration: 0.5, ease: "linear" }}
                     className={`w-[800px] py-4 px-7 bg-transparent`}>
                     <div className='w-full flex items-center justify-between'>
-                        <h1 className='font-oswald font-bold text-slate-950 text-2xl cursor-pointer'>HearMedi</h1>
+                        <div className='flex gap-2 items-center justify-center'>
+                            <img src={logo} className='w-8' alt="HearMedi Logo" />
+                            <h1 className='font-oswald font-bold text-slate-950 text-2xl cursor-pointer'>HearMedi</h1>
+                        </div>
                         <Github className='text-slate-950 cursor-pointer' />
                     </div>
                 </motion.nav>

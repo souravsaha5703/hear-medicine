@@ -28,6 +28,7 @@ import LanguageSelectionBox from '@/components/LanguageSelectionBox';
 import AnalyzeLoader from '@/components/AnalyzeLoader';
 import TextExplanationSection from '@/components/TextExplanationSection';
 import SafetySection from '@/components/SafetySection';
+import logo from '@/assets/logo.png';
 
 const Analysis = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -213,9 +214,7 @@ const Analysis = () => {
                                 Back
                             </Button>
                             <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
-                                    <Brain className="w-5 h-5 text-white" />
-                                </div>
+                                <img src={logo} className='w-8' alt="HearMedi Logo" />
                                 <span className="text-xl font-oswald font-bold text-gray-900">HearMedi</span>
                             </div>
                         </div>
