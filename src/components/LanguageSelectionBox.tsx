@@ -15,7 +15,7 @@ interface LanguageSelectionProps {
 const LanguageSelectionBox: React.FC<LanguageSelectionProps> = ({ audioLanguage, setAudioLanguage }) => {
   return (
     <Select value={audioLanguage} onValueChange={(value) => setAudioLanguage(value)}>
-      <SelectTrigger className="w-[280px] font-noto">
+      <SelectTrigger className="w-[280px] font-noto max-[375px]:w-[240px]">
         <SelectValue placeholder="Choose language" />
       </SelectTrigger>
       <SelectContent className='font-noto text-slate-900 font-normal'>

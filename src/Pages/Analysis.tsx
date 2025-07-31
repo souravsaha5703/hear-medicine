@@ -360,25 +360,25 @@ const Analysis = () => {
                                                 <CheckCircle className="w-6 h-6 mr-2 text-green-600" />
                                                 <span className='text-slate-950 font-noto font-semibold'>Analysis Complete</span>
                                             </CardTitle>
-                                            <CardDescription className='font-noto'>
+                                            <CardDescription className='font-noto max-[400px]:text-xs'>
                                                 AI has successfully identified your medication
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent>
                                             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                                <h3 className="text-xl font-noto font-bold text-green-900 mb-2">
+                                                <h3 className="text-xl font-noto font-bold text-green-900 mb-2 max-[425px]:text-base max-[400px]:text-xs">
                                                     {medicineName}
                                                 </h3>
                                             </div>
 
                                             <Tabs defaultValue="audio" className="w-full">
                                                 <TabsList className="grid w-full grid-cols-2">
-                                                    <TabsTrigger value="audio" className="flex font-noto items-center">
-                                                        <Volume2 className="w-4 h-4 mr-2" />
+                                                    <TabsTrigger value="audio" className="flex font-noto items-center max-[400px]:text-xs">
+                                                        <Volume2 className="w-4 h-4 mr-2 max-[375px]:hidden" />
                                                         Audio Explanation
                                                     </TabsTrigger>
-                                                    <TabsTrigger value="text" className="flex font-noto items-center">
-                                                        <FileText className="w-4 h-4 mr-2" />
+                                                    <TabsTrigger value="text" className="flex font-noto items-center max-[400px]:text-xs">
+                                                        <FileText className="w-4 h-4 mr-2 max-[375px]:hidden" />
                                                         Text Results
                                                     </TabsTrigger>
                                                 </TabsList>

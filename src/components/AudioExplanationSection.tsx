@@ -79,7 +79,7 @@ const AudioSection: React.FC<AudioProps> = ({ audio }) => {
                 <Button
                     onClick={toggleAudio}
                     size="lg"
-                    className="bg-slate-950 hover:bg-slate-900 cursor-pointer font-noto font-normal w-[300px]"
+                    className="bg-slate-950 hover:bg-slate-900 cursor-pointer font-noto font-normal w-[300px] max-[375px]:w-[240px]"
                 >
                     {isPlaying ? (
                         <>
@@ -98,7 +98,7 @@ const AudioSection: React.FC<AudioProps> = ({ audio }) => {
                 </span>
                 <div
                     ref={progressRef}
-                    className="relative h-3 bg-slate-200 rounded cursor-pointer w-80"
+                    className="relative h-3 bg-slate-200 rounded cursor-pointer w-80 max-[375px]:w-full"
                     onClick={handleSeek}
                 >
                     <div
