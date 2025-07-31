@@ -4,8 +4,6 @@ import {
     Upload,
     Camera,
     RotateCcw,
-    Play,
-    Pause,
     Volume2,
     FileText,
     CheckCircle,
@@ -31,6 +29,7 @@ import { medicineInfo } from '@/hooks/getInfo';
 import ReactMarkdown from "react-markdown";
 import { cleanMarkdownData } from '@/utils/cleanMarkdown';
 import { cleanOCRTextData } from '@/utils/cleanOCRText';
+import AudioSection from '@/components/audioSection';
 
 const Analysis = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -38,13 +37,12 @@ const Analysis = () => {
     const [medicineName, setMedicineName] = useState<string>('');
     const [medicineData, setMedicineData] = useState<string>('');
     const [audioLanguage, setAudioLanguage] = useState<string>('');
+    const [audioExplanation, setAudioExplanation] = useState<string>('');
     const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
     const [analysisResult, setAnalysisResult] = useState<boolean>(false);
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [isDragOver, setIsDragOver] = useState<boolean>(false);
     const [textContentLoading, setTextContentLoading] = useState<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const audioRef = useRef<HTMLAudioElement>(null);
     const navigate = useNavigate();
     const { getMedicineInfo, getMedicineInfoVoice } = medicineInfo;
 
@@ -134,11 +132,11 @@ const Analysis = () => {
                     setMedicineName(cleanText);
                     try {
                         const languageInfo = audioLanguage.split(" ");
-                        const medicineInfo = await getMedicineInfo(cleanText,languageInfo[2]);
+                        const medicineInfo = await getMedicineInfo(cleanText, languageInfo[2]);
                         const cleanMedicineInfo = cleanMarkdownData(medicineInfo);
-                        const medicineInfoVoice = await getMedicineInfoVoice(cleanMedicineInfo,languageInfo[0],languageInfo[1]);
+                        const medicineInfoVoice = await getMedicineInfoVoice(cleanMedicineInfo, languageInfo[0], languageInfo[1]);
                         setMedicineData(medicineInfo);
-                        console.log(medicineInfoVoice);
+                        setAudioExplanation(medicineInfoVoice);
                         setTextContentLoading(false);
                     } catch (error) {
                         console.error(error);
@@ -154,17 +152,6 @@ const Analysis = () => {
             setIsAnalyzing(false);
         }
 
-    };
-
-    const toggleAudio = () => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.pause();
-            } else {
-                audioRef.current.play();
-            }
-            setIsPlaying(!isPlaying);
-        }
     };
 
     return (
@@ -268,6 +255,11 @@ const Analysis = () => {
                                             Change
                                         </Button>
                                     </div>
+                                    <div className='text-center'>
+                                        <p className="text-sm font-noto text-slate-600 mb-4">
+                                            Image ready for analysis • {selectedImage?.name}
+                                        </p>
+                                    </div>
                                 </motion.div>
                             )}
                             <div className='w-full flex flex-col items-start justify-start mt-5 space-y-4'>
@@ -297,13 +289,10 @@ const Analysis = () => {
                                 </Select>
                             </div>
                             {imagePreview && <div className="text-center">
-                                <p className="text-sm font-noto text-slate-600 mb-4">
-                                    Image ready for analysis • {selectedImage?.name}
-                                </p>
                                 <Button
                                     onClick={handleAnalyze}
                                     disabled={isAnalyzing}
-                                    className="bg-slate-950 hover:bg-slate-900 cursor-pointer font-noto font-normal"
+                                    className="bg-slate-950 hover:bg-slate-900 cursor-pointer font-noto font-normal mt-10"
                                     size="lg"
                                 >
                                     {isAnalyzing ? (
@@ -378,15 +367,15 @@ const Analysis = () => {
                                             </h3>
                                         </div>
 
-                                        <Tabs defaultValue="text" className="w-full">
+                                        <Tabs defaultValue="audio" className="w-full">
                                             <TabsList className="grid w-full grid-cols-2">
-                                                <TabsTrigger value="text" className="flex font-noto items-center">
-                                                    <FileText className="w-4 h-4 mr-2" />
-                                                    Text Results
-                                                </TabsTrigger>
                                                 <TabsTrigger value="audio" className="flex font-noto items-center">
                                                     <Volume2 className="w-4 h-4 mr-2" />
                                                     Audio Explanation
+                                                </TabsTrigger>
+                                                <TabsTrigger value="text" className="flex font-noto items-center">
+                                                    <FileText className="w-4 h-4 mr-2" />
+                                                    Text Results
                                                 </TabsTrigger>
                                             </TabsList>
 
@@ -402,58 +391,7 @@ const Analysis = () => {
                                             </TabsContent>
 
                                             <TabsContent value="audio">
-                                                <motion.div
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    transition={{ delay: 0.3 }}
-                                                    className="text-center py-8"
-                                                >
-                                                    <div className="space-y-6">
-                                                        <div className="w-24 h-24 bg-gradient-to-br from-orange-600 to-amber-600 rounded-full flex items-center justify-center mx-auto">
-                                                            <Volume2 className="w-12 h-12 text-white" />
-                                                        </div>
-
-                                                        <div>
-                                                            <h4 className="text-xl font-noto font-semibold text-slate-900 mb-2">
-                                                                Audio Explanation Ready
-                                                            </h4>
-                                                            <p className="text-slate-600 font-noto mb-6">
-                                                                Listen to a detailed explanation of your medication analysis
-                                                            </p>
-                                                        </div>
-
-                                                        <Button
-                                                            onClick={toggleAudio}
-                                                            size="lg"
-                                                            className="bg-slate-950 hover:bg-slate-900 cursor-pointer font-noto font-normal"
-                                                        >
-                                                            {isPlaying ? (
-                                                                <>
-                                                                    <Pause className="w-5 h-5 mr-2" />
-                                                                    Pause Audio
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <Play className="w-5 h-5 mr-2" />
-                                                                    Play Audio Explanation
-                                                                </>
-                                                            )}
-                                                        </Button>
-
-                                                        <p className="text-sm font-noto text-slate-500">
-                                                            Duration: ~2 minutes • Available in 25+ languages
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Hidden audio element for demo */}
-                                                    <audio
-                                                        ref={audioRef}
-                                                        onEnded={() => setIsPlaying(false)}
-                                                        className="hidden"
-                                                    >
-                                                        {/* In a real app, this would be the generated audio URL */}
-                                                    </audio>
-                                                </motion.div>
+                                                <AudioSection audio={audioExplanation} />
                                             </TabsContent>
                                         </Tabs>
                                     </CardContent>

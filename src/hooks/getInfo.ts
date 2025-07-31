@@ -16,7 +16,7 @@ const getMedicineInfo = async (medicineName: string,language: string) => {
                 },
                 {
                     role: "user",
-                    content: `Give me detailed information about "${medicineName}" in ${language} language and in the followin format: 1. Uses, 2. Dosage (Adults and Children), 3. Common Side Effects, 4. Warnings (Pregnancy, Elderly, Liver/Kidney patients)`
+                    content: `Give me detailed information about "${medicineName}" in simple ${language} language so that normal users can understand and in the followin format: 1. Uses, 2. Dosage (Adults and Children), 3. Common Side Effects, 4. Warnings (Pregnancy, Elderly, Liver/Kidney patients)`
                 },
             ],
         }),
