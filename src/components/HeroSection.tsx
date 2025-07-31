@@ -26,7 +26,7 @@ const HeroSection = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
                         className="text-base sm:text-lg lg:text-xl text-center font-normal font-noto text-slate-800 max-w-xl mx-auto my-5 max-[375px]:text-sm">
-                        Simply capture a photo of your medication and get instant, clear audio explanations about usage, dosage, and important safety information.
+                        Simply capture a photo of your medicine and get instant, clear audio explanations about usage, dosage, and important safety information.
                     </motion.p>
                     <div className="flex items-center justify-center max-[425px]:mt-5">
                         <Button onClick={() => navigate('/analysis')} className="w-60 h-12 text-lg bg-slate-50 text-slate-950 hover:bg-slate-200 font-noto font-medium cursor-pointer max-[375px]:h-11">Try it now</Button>
