@@ -160,8 +160,9 @@ const Analysis = () => {
                         if (axios.isAxiosError(error)) {
                             setError({
                                 title: "Something went wrong",
-                                description: error.response?.data || error.message
+                                description: error.message
                             });
+                            console.error(error);
                         } else if (error instanceof Error) {
                             setError({
                                 title: "Something went wrong",
