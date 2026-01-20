@@ -160,13 +160,13 @@ const Analysis = () => {
                         if (axios.isAxiosError(error)) {
                             setError({
                                 title: "Something went wrong",
-                                description: error.message
+                                description: "The service is temporarily unavailable. Please try again later."
                             });
                             console.error(error);
                         } else if (error instanceof Error) {
                             setError({
                                 title: "Something went wrong",
-                                description: error.message
+                                description: "The service is temporarily unavailable. Please try again later."
                             });
                         } else {
                             setError({
